@@ -73,10 +73,10 @@ public:
 	Ray PrimaryRay(const Vector& pixel_sample) //  Rays cast from the Eye to a pixel sample which is in Viewport coordinates
 	{
 		Vector ray_dir;
-		float df = sqrt(pow(eye.x - pixel_sample.x, 2) +
-			pow(eye.y - pixel_sample.y, 2) + pow(eye.z - pixel_sample.z, 2));
+		float df = sqrt(pow(eye.x - at.x, 2) +
+			pow(eye.y - at.y, 2) + pow(eye.z - at.z, 2));
 
-		Vector ze =  (eye - pixel_sample) / df;
+		Vector ze =  (eye - at) / df;
 
 		Vector xe = up % ze;
 		xe = xe / sqrt(pow(xe.x, 2) + pow(xe.y, 2) + pow(xe.z, 2));
@@ -84,6 +84,8 @@ public:
 		Vector ye = ze % xe;
 
 		ray_dir = (xe.normalize() * (w * ((pixel_sample.x / res_x) - 0.5))) + (ye.normalize() * (h * ((pixel_sample.y / res_y) - 0.5))) - (ze.normalize() * df);
+
+		//printf("xe: %f %f %f \nye: %f %f %f \nze: %f %f %f \n");
 	
 		//printf("Origin: %f %f %f\n Direction: %f %f %f\n", eye.x, eye.y, eye.z, ray_dir.x, ray_dir.y, ray_dir.z);
 		return Ray(eye, ray_dir.normalize());  

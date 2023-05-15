@@ -27,6 +27,18 @@
     <None Include="P3D_Scenes\balls_medium.p3f">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\dof.p3f">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\dragon.p3f">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\mount_low.p3f">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\mount_high.p3f">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="skybox\back.jpg">

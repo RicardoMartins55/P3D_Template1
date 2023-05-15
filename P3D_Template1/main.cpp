@@ -464,36 +464,73 @@ Color rayTracing(Ray ray, int depth, float ior_1)  //index of refraction of medi
 	Vector normal;
 	Color obj_color;
 
-	printf("%d\n", num_objects);
-
+	//printf("%d\n", num_objects);
 	for (int it = 0; it < num_objects; it++) {
-		printf("Iteration: %d\n", it);
+		//printf("Iteration: %d\n", it);
 		if (scene->getObject(it)->intercepts(ray, t)) {
-			printf("T: %f\n", t);
+			//printf("Direction: %f %f %f\n", ray.direction.x, ray.direction.y, ray.direction.z);
+			//printf("T: %f\n", t);
 			
 			if (min_dist == -1.0f) {
 				//printf("A substituir: min_dist: %f\n t: %f\n", min_dist, t);
 				min_dist = t;
-				printf("min_dist: %f\n", min_dist);
+				//printf("min_dist: %f\n", min_dist);
 			}
 			else if (t < min_dist) {
-				printf("I'm here!\n");
+				//printf("I'm here!\n");
 				min_dist = t;
 				closest_obj = scene->getObject(it);
 			}
 		}
 	}
+
 	if (min_dist == -1.0f) {
 		//printf("Eia bro da-me o costaschao\n");
 		return scene->GetBackgroundColor();
 	}
 	else {
-		normal = closest_obj->getNormal(ray.origin + ray.direction*t);
+		Vector hit_point = ray.origin + ray.direction * t;
 
-		obj_color = closest_obj->GetMaterial()->GetDiffColor() + closest_obj->GetMaterial()->GetSpecColor();
+		normal = closest_obj->getNormal(hit_point);
+		obj_color = (closest_obj->GetMaterial()->GetDiffColor() * closest_obj->GetMaterial()->GetDiffuse());
 
+		for (int i = 0; i < scene->getNumLights(); i++) {
+
+			Vector l = (hit_point - scene->getLight(i)->position).normalize();
+			Vector v = (hit_point - ray.origin).normalize();
+			Vector half_vector = (l + v) / (l + v).length();
+			
+			
+			float t_temp;
+
+			if (l * normal > 0) {
+				bool shadow = false;
+				Ray shadowRay = Ray(hit_point, l);
+				for (int it = 0; it < num_objects; it++) {
+					if (scene->getObject(it)->intercepts(shadowRay, t_temp)) {
+						//printf("t_temp: %f\n", t_temp);
+						if (t_temp < (hit_point - scene->getLight(i)->position).length()) {
+							shadow = true;
+						}
+					}
+				}
+				if (!shadow) {
+					obj_color += ((scene->getLight(i)->color * closest_obj->GetMaterial()->GetDiffuse()) * (normal * l)) +
+								((scene->getLight(i)->color * closest_obj->GetMaterial()->GetSpecular()) * pow((half_vector * normal), 4));
+				}
+			}
+		}
+		if (depth >= MAX_DEPTH) return obj_color;
+		//If has reflection
+		if (closest_obj->GetMaterial()->GetReflection() > 0 ){
+			Vector v = (hit_point - ray.origin);
+			Vector r_refl =  normal * 2 * (v * normal) - v;
+			Ray refl = Ray(hit_point, r_refl);
+		}
+		printf("Color: %f, %f, %f\n", obj_color.r(), obj_color.g(), obj_color.b());
 		return obj_color;
 	}
+	
 }
 
 
@@ -521,7 +558,7 @@ void renderScene()
 			pixel.x = x + 0.5f;
 			pixel.y = y + 0.5f;
 
-			
+			//printf("Pixel: (%f, %f)\n", pixel.x, pixel.y);
 			Ray ray = scene->GetCamera()->PrimaryRay(pixel);   //function from camera.h
 			//printf("Origin: %f %f %f\n Direction: %f %f %f\n", ray.origin.x, ray.origin.y, ray.origin.z, ray.direction.x, ray.direction.y, ray.direction.z);
 			//YOUR 2 FUNTIONS:

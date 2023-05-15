@@ -68,7 +68,7 @@ Plane::Plane(Vector& P0, Vector& P1, Vector& P2)
 {
    float l;
 
-   Vector temp = (P1 - P0)%(P2 - P0);
+   Vector temp = ((P1 - P0)%(P2 - P0));
 
    //Calculate the normal plane: counter-clockwise vectorial product.
    PN = temp/temp.length();
@@ -98,6 +98,7 @@ bool Plane::intercepts( Ray& r, float& t )
 	//plane
 	Vector n = this->PN;
 	float an = this->D;
+
 	
 	//printf("%f %f %f\n%f %f %f\n", n.x, n.y, n.z, d.x, d.y, d.z);
 	//printf("Plane\n");
@@ -109,15 +110,8 @@ bool Plane::intercepts( Ray& r, float& t )
 	else{
 		//printf("Not parallel\n");
 		t = -((o * n - an) / (n * d));
-		//printf("t = %f\n", t);
-		if (t < 0.0f) {
-			//printf("Behind ray\n");
-			return false;
-		}
-		else {
-			//printf("Front of ray\n");
-			return true;
-		}
+		printf("Plane t = %f\n", t);
+		return (t >= 0);
 	}
 }
 
@@ -130,28 +124,56 @@ Vector Plane::getNormal(Vector point)
 bool Sphere::intercepts(Ray& r, float& t )
 {
 	//PUT HERE YOUR CODE
-	Vector d = r.direction;
+	/*Vector d = r.direction;
 	Vector oc = (this->center - r.origin).normalize();
-	float b = d * oc;
-	float c = (oc * oc) - this->SqRadius;
+	float b = d * oc*2;
+	float c = (oc * oc) - (this->SqRadius );
 
 	//Discriminant negative, discard, because there isn't intersection
-	if (((b * b) - c) <= 0)
+	if (((b * b) - c) <= 0) {
+		//printf("1 st false: b: %f, c: %f\n", b, c);
 		return false;
+	}
 	//If origin of ray starts outside sphere
 	else if (c > 0) {
+		
 		//Sphere behind origin
 		if (b <= 0)
 			return false;
 		t = b - sqrt(b * b - c);
+		//printf("1 st else if: b: %f, c: %f\n", b, c);
 		return true;
 	}
 	//If origin of ray starts inside sphere
 	else {
+		printf("2nd else if: b: %f, c: %f\n", b, c);
 		t = b + sqrt(b * b - c);
 		return true;
 
+	}*/
+	float t0, t1;
+	Vector L = (this->center - r.origin).normalize();
+	
+	float tca = L * r.direction;
+	//printf("L: %f %f %f Dir: %f %f %f\n", L.x, L.y, L.z, r.direction.x, r.direction.y, r.direction.z);
+	if (tca < 0) return false;
+	float d2 = (L * L) - (tca * tca);
+	//printf("Sphere2\n");
+	if (d2 > this->SqRadius) return false;
+	float thc = sqrt(SqRadius - d2);
+	t0 = tca - thc;
+	t1 = tca + thc;
+
+	if (t0 > t1) std::swap(t0, t1);
+
+	if (t0 < 0) {
+		t0 = t1;
+		//printf("Sphere t0: %f\n Sphere t1: %f\n", t0, t1);
+		if (t0 < 0) return false;
 	}
+	t = t0;
+	printf("Sphere t= %f\n", t);
+	return true;
 }
 
 
@@ -578,6 +600,7 @@ bool Scene::load_p3f(const char *name)
           file >> P0 >> P1 >> P2;
           plane = new Plane(P0, P1, P2);
 	      if (material) plane->SetMaterial(material);
+		  printf("Color:(%f %f %f)\n", plane->GetMaterial()->GetDiffColor().r(), plane->GetMaterial()->GetDiffColor().g(), plane->GetMaterial()->GetDiffColor().b());
           this->addObject( (Object*) plane);
 	  }
 

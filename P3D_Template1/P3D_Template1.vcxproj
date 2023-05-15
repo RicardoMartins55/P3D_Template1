@@ -124,7 +124,8 @@
       <Command>xcopy /y /d  "$(ProjectDir)Dependencies\lib\$(Platform)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>Dependencies.exe</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -174,6 +175,10 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\dof.p3f" />
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\dragon.p3f" />
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\mount_high.p3f" />
+    <None Include="..\..\..\..\Downloads\More P3D Scenes\mount_low.p3f" />
     <None Include="P3D_Scenes\balls_box.p3f" />
     <None Include="P3D_Scenes\balls_high.p3f" />
     <None Include="P3D_Scenes\balls_low.p3f" />
