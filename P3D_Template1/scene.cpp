@@ -110,8 +110,8 @@ bool Plane::intercepts( Ray& r, float& t )
 	else{
 		//printf("Not parallel\n");
 		t = -((o * n - an) / (n * d));
-		printf("Plane t = %f\n", t);
-		return (t >= 0);
+		//printf("Plane t = %f\n", t);
+		return (t > 0);
 	}
 }
 
@@ -123,34 +123,6 @@ Vector Plane::getNormal(Vector point)
 
 bool Sphere::intercepts(Ray& r, float& t )
 {
-	//PUT HERE YOUR CODE
-	/*Vector d = r.direction;
-	Vector oc = (this->center - r.origin).normalize();
-	float b = d * oc*2;
-	float c = (oc * oc) - (this->SqRadius );
-
-	//Discriminant negative, discard, because there isn't intersection
-	if (((b * b) - c) <= 0) {
-		//printf("1 st false: b: %f, c: %f\n", b, c);
-		return false;
-	}
-	//If origin of ray starts outside sphere
-	else if (c > 0) {
-		
-		//Sphere behind origin
-		if (b <= 0)
-			return false;
-		t = b - sqrt(b * b - c);
-		//printf("1 st else if: b: %f, c: %f\n", b, c);
-		return true;
-	}
-	//If origin of ray starts inside sphere
-	else {
-		printf("2nd else if: b: %f, c: %f\n", b, c);
-		t = b + sqrt(b * b - c);
-		return true;
-
-	}*/
 	float t0, t1;
 	Vector L = (this->center - r.origin).normalize();
 	
@@ -172,7 +144,7 @@ bool Sphere::intercepts(Ray& r, float& t )
 		if (t0 < 0) return false;
 	}
 	t = t0;
-	printf("Sphere t= %f\n", t);
+	//printf("Sphere t= %f\n", t);
 	return true;
 }
 
