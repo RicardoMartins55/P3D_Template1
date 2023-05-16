@@ -459,36 +459,38 @@ Color rayTracing(Ray ray, int depth, float ior_1)  //index of refraction of medi
 	float t = 0.0f;
 	//minimum distance is -1 while there isn't an intersection
 	float min_dist = 10000.0f;
-	Object* closest_obj = scene->getObject(0);
+	Object* closest_obj = NULL;
 	int num_objects = scene->getNumObjects();
 	Vector normal;
 	Color obj_color;
+	Vector hit_point;
 
 	//printf("%d\n", num_objects);
 	for (int it = 0; it < num_objects; it++) {
 		//printf("Iteration: %d\n", it);
 		if (scene->getObject(it)->intercepts(ray, t)) {
 			//printf("Direction: %f %f %f\n", ray.direction.x, ray.direction.y, ray.direction.z);
-			//printf("T: %f\n", t);
+			printf("T: %f\n", t);
 			if (t < min_dist) {
 				//printf("I'm here!\n");
 				min_dist = t;
 				closest_obj = scene->getObject(it);
+				hit_point = ray.origin + ray.direction * min_dist;
 			}
 		}
 	}
-
-	if (min_dist == -1.0f) {
+	//printf("min_dist: %f\n", min_dist);
+	if (closest_obj == NULL) {
 		//printf("Eia bro da-me o costaschao\n");
 		return scene->GetBackgroundColor();
 	}
 	else {
-		Vector hit_point = ray.origin + ray.direction * min_dist;
+		
 
 		normal = closest_obj->getNormal(hit_point);
 		obj_color = (closest_obj->GetMaterial()->GetDiffColor() * closest_obj->GetMaterial()->GetDiffuse());
 
-		for (int j = 0; j < scene->getNumLights(); j++) {
+		/*for (int j = 0; j < scene->getNumLights(); j++) {
 
 			Vector l = (hit_point - scene->getLight(j)->position).normalize();
 			Vector v = (hit_point - ray.origin).normalize();
@@ -509,11 +511,10 @@ Color rayTracing(Ray ray, int depth, float ior_1)  //index of refraction of medi
 					}
 				}
 				if (!shadow) {
-					obj_color += ((scene->getLight(j)->color * closest_obj->GetMaterial()->GetDiffuse()) * (normal * l)) +
-								((scene->getLight(j)->color * closest_obj->GetMaterial()->GetSpecular()) * (half_vector * normal));
+					obj_color += ((scene->getLight(j)->color * closest_obj->GetMaterial()->GetDiffuse()) * max((normal * l),0)) + ((scene->getLight(j)->color * closest_obj->GetMaterial()->GetSpecular()) * max(pow((half_vector * normal),closest_obj->GetMaterial()->GetShine()),0));
 				}
 			}
-		}
+		}*/
 		if (depth >= MAX_DEPTH) return obj_color;
 		//If has reflection
 		if (closest_obj->GetMaterial()->GetReflection() > 0 ){

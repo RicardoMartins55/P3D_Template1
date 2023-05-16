@@ -72,6 +72,7 @@ Plane::Plane(Vector& P0, Vector& P1, Vector& P2)
 
    //Calculate the normal plane: counter-clockwise vectorial product.
    PN = temp/temp.length();
+   
 
    if ((l=PN.length()) == 0.0)
    {
@@ -82,6 +83,7 @@ Plane::Plane(Vector& P0, Vector& P1, Vector& P2)
      PN.normalize();
 	 //Calculate D
      D  = - (P0*PN);
+	 printf("D: %f\n", D);
    }
 }
 
@@ -91,26 +93,21 @@ Plane::Plane(Vector& P0, Vector& P1, Vector& P2)
 
 bool Plane::intercepts( Ray& r, float& t )
 {
-	//ray
-	Vector o = r.origin;
-	Vector d = r.direction;
-
 	//plane
 	Vector n = this->PN;
 	float an = this->D;
 
-	
 	//printf("%f %f %f\n%f %f %f\n", n.x, n.y, n.z, d.x, d.y, d.z);
 	//printf("Plane\n");
-	if (n * d == 0) {
+	if (n * r.direction == 0) {
 		
 		//printf("First if\n");
 		return false;
 	}
 	else{
 		//printf("Not parallel\n");
-		t = -((o * n - an) / (n * d));
-		//printf("Plane t = %f\n", t);
+		t = -((r.origin * n - an) / (n * r.direction));
+		printf("Plane t = %f\n", t);
 		return (t > 0);
 	}
 }
@@ -136,11 +133,12 @@ bool Sphere::intercepts(Ray& r, float& t )
 	t0 = tca - thc;
 	t1 = tca + thc;
 
+	printf(" Sphere t0: %f\n  Sphere t1: %f\n", t0, t1);
 	if (t0 > t1) std::swap(t0, t1);
 
 	if (t0 < 0) {
 		t0 = t1;
-		//printf("Sphere t0: %f\n Sphere t1: %f\n", t0, t1);
+		
 		if (t0 < 0) return false;
 	}
 	t = t0;
